@@ -1,0 +1,25 @@
+{
+  "name": "node-todo",
+  "version": "0.0.1",
+  "description": "Simple node application, with tests and with docker support",
+  "main": "server.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "node",
+    "todo",
+    "docker"
+  ],
+  "author": "Nerman",
+  "license": "MIT",
+  "dependencies": {
+    "bluebird": "^3.1.1",
+    "body-parser": "^1.14.2",
+    "express": "^4.13.3",
+    "mocha": "^2.3.4",
+    "morgan": "^1.6.1",
+    "q": "^1.4.1",
+    "supertest": "^1.1.0"
+  }
+}
