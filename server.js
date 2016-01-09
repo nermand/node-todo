@@ -1,11 +1,15 @@
 var http = require('http');
+var mongoose = require('mongoose');                 // mongoose for mongodb
 var express = require("express");
-var morgan = require('morgan');
-var app = express();
+var morgan = require('morgan');						// log requests to the console (express4)
+var bodyParser = require('body-parser');			// parse request body
+
+var config = require('./config');
 var controllers = require("./controllers");
 
-// parse request body
-var bodyParser = require('body-parser');
+var app = express();
+
+mongoose.connect(config.mongodb.url);
 
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded

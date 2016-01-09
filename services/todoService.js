@@ -1,44 +1,66 @@
 (function (todoService) {
 	'use strict';
 
-	var todos = [
-		{id: 1, title: 'Do the laundry'},
-		{id: 2, title: 'Wash the dishes'}
-	];
+	var Todo = require('../models/todoModel');
+	var uuid = require('node-uuid');
+	var Promise = require("bluebird");
 
-	todoService.getTodos = function (next) {
-		next(null, todos);
+	// function getTodosOld(next){
+	// 	Todo.find(function(err, todos) {
+
+	// 		// if there is an error retrieving, send the error.
+	// 		if (err){
+	// 			next(null);
+	// 		}else{
+	// 			next(null, todos);
+	// 		}
+	// 	});
+	// }
+
+	function getAllTodos(){
+		return Todo.find();
+	}
+
+	todoService.getTodos = function () {
+		return getAllTodos();
 	};
 
-	todoService.addTodo = function (todo, next) {
+	todoService.getTodo = function (todoId) {
+// return Todo.findOne({id : todoId});
+		return new Promise(function(resolve, reject){
+			Todo.findOne({id : todoId}, function (err, todo) {
+				if (err) {
+					return reject(err);
+				}
 
-		if (!todo) {
-			next('Empty todo item');
-			return;
-		};
-
-		todos.push(
-			{ 
-				id: todos.length + 1,
-				title: todo.title
-			}
-		);
-		next(null);
-	};
-
-	todoService.deleteTodo = function (todoId, next) {
-
-		var todoIndex = todos.findIndex(function(t){
-			return t.id === +todoId;
+				if (todo) {
+					return resolve(todo);
+				}else{
+					return reject('Could not find todo with id: ' + todoId);
+				}
+			});
 		});
+	};
 
-		if (!todoId || todoIndex === -1) {
-			next('Could not find todo with Id ' + todoId);
-			return;
-		};
+	todoService.addTodo = function (todo) {
 
-		todos.splice(todoIndex, 1);
-		next(null);
+		if (!todo || !todo.title) {
+			return Promise.reject('Empty todo item');
+		}
+		
+		return Todo.create({
+			id: uuid.v1(),
+			title : todo.title
+		});
+	};
+
+	todoService.deleteTodo = function (todoId) {
+
+		if (!todoId) {
+			return Promise.reject('Cannot remove todo without an ID');
+		}
+
+		return Todo.findOneAndRemove({id : todoId});
 	};
 }
 

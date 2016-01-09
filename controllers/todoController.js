@@ -6,27 +6,33 @@
 	todoController.init = function (app) {
 
 	    app.get('/api/todos', function(req, res) {
+			
+			function onSuccess (todos) {
+				res.status(200).json(todos);
+			}
 
-	    	function next (err, todos) {
-	    		if (err) {
-					res.status(500).send(err);
-	    		}else{
-	    			res.status(200).send(todos);
-	    		}
-	    	}
+			function onError (todos) {
+				res.status(500).json(err);
+			}
+	    	
+	    	todoService.getTodos().then(onSuccess).catch(onError);
+	    });
 
-	    	var todos = todoService.getTodos(next);
+	    app.get('/api/todos/:todoId', function(req, res) {
+			
+			function onSuccess (todo) {
+				res.status(200).json(todo);
+			}
+
+			function onError (err) {
+				res.status(500).json(err);
+			}
+
+	    	var todoId = req.params.todoId;
+	    	todoService.getTodo(todoId).then(onSuccess).catch(onError);
 	    });
 
 	    app.post('/api/todos', function(req, res) {
-
-	    	function next (err) {
-	    		if (err) {
-					res.status(500).send(err);
-	    		}else{
-	    			res.sendStatus(200);
-	    		}
-	    	}
 
 			var body = "";
 			
@@ -35,24 +41,46 @@
 			});
 			
 			req.on('end', function () {
+
+				if (body.length === 0) {
+					res.status(400).json('Bad request');
+					return;
+				}
 		    	var todo = JSON.parse(body);
-		    	var todos = todoService.addTodo(todo, next);
-			})
+		    	var todos = todoService.addTodo(todo).then(onSuccess).catch(onError);
+			});
+
+			req.on('error', function(e) {
+			  	console.log('problem with request: ' + e.message);
+				res.status(500).json(e.message);
+			});
+
+			function onSuccess (todos) {
+				res.sendStatus(204);
+			}
+
+			function onError (err) {
+				res.status(500).json(err);
+			}
 	    });
 
-	    // delete a todo
-	    app.delete('/api/todos/:todo_id', function(req, res) {
+	    app.delete('/api/todos/:todoId', function(req, res) {
 
-	    	function next (err) {
-	    		if (err) {
-					res.status(500).send(err);
-	    		}else{
-	    			res.sendStatus(200);
-	    		}
-	    	}
+			function onSuccess (todo) {
+				if (todo) {
+					res.sendStatus(200);
+				}else{
+					res.sendStatus(404);
+				}
+			}
 
-	    	var todoId = req.params.todo_id;
-	    	todoService.deleteTodo(todoId, next);
+			function onError (err) {
+				res.status(500).json(err);
+			}
+
+	    	var todoId = req.params.todoId;
+
+	    	todoService.deleteTodo(todoId).then(onSuccess).catch(onError);
 	    });
 	};
 }
