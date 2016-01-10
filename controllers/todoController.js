@@ -2,7 +2,7 @@
 	'use strict';
 
 	var todoService = require('../services/todoService');
-	var helperService = require('../services/helperService');
+	//var helperService = require('../services/helperService');
 
 	todoController.init = function (app) {
 
@@ -35,29 +35,10 @@
 
 	    app.post('/api/todos', function(req, res) {
 
-			var body = '';
+			todoService.addTodo(req.body).then(onSuccess).catch(onError);
 
-			req.on('data', function (chunk) {
-				body += chunk;
-			});
-
-			req.on('end', function () {
-
-				if (body.length === 0) {
-					res.status(400).json('Bad request');
-					return;
-				}
-		    	var todo = JSON.parse(body);
-		    	todoService.addTodo(todo).then(onSuccess).catch(onError);
-			});
-
-			req.on('error', function(e) {
-			  	console.log('problem with request: ' + e.message);
-				res.status(500).json(e.message);
-			});
-
-			function onSuccess (todos) {
-				res.sendStatus(204);
+			function onSuccess (todo) {
+				res.status(200).json(todo.id);
 			}
 
 			function onError (err) {
@@ -98,16 +79,9 @@
     			res.status(500).json(err);
   			}
 
-			helperService.parseRequestBody(req).then( (todo) => {
-				todoService.updateTodo(todo).then(onUpdateSuccess).catch(onUpdateError);
-			}).catch((err) => {
-				if (err.emptyBody) {
-					res.status(400).json('Bad request');
-					return;
-				}else {
-					res.status(500).json(err.message);
-				}
-			});
+  			todoService.updateTodo(req.body)
+  				.then(onUpdateSuccess)
+  				.catch(onUpdateError);
 	    });
 	};
 }

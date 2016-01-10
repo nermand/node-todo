@@ -1,0 +1,82 @@
+<div class="container">
+<!-- SET THE CONTROLLER AND GET ALL TODOS WITH INITIALIZE FUNCTION -->
+
+	<!-- HEADER AND TODO COUNT -->
+	<div class="jumbotron text-center">
+		<h1>Todos list <span class="label label-info">{{ todo.todos.length }}</span></h1>
+	</div>
+
+	<!-- TODO LIST -->
+	<div id="todo-list" class="row">
+		<div class="col-sm-10 col-sm-offset-1">
+			<table class="table table-striped table-hover">
+			    <thead>
+			      <tr>
+			        <th></th>
+			        <th>Title</th>
+			        <th>Priority</th>
+			        <th>Due Date</th>
+			        <th></th>
+			      </tr>
+			    </thead>
+			    <tbody>
+			      <tr ng-repeat="t in todo.todos" 
+			      		ng-class='{strikeout: t.completed}'>
+			        <td ng-click='todo.markAsComplete(t)'>
+			        	<span class="glyphicon glyphicon-check" aria-hidden="true"></span>
+			        </td>
+			        <td>{{ t.title }}</td>
+			        <td>{{ t.priority | priority}}</td>
+			        <td>{{ t.dueDate | date:'medium'}}</td>	
+			        <td ng-click='todo.deleteTodo(t.id)'>
+			        	<span class="glyphicon glyphicon glyphicon-trash" aria-hidden="true"></span>
+			        </td>
+			      </tr>
+			    </tbody>
+			  </table>
+
+		</div>
+	</div>
+
+	<!-- FORM TO CREATE TODOS -->
+	<div id="todo-form" class="row">
+		<div class="col-sm-8 col-sm-offset-2 text-center">
+			<form>
+				<div class="form-group">
+
+					<!-- BIND THIS VALUE TO formData.title IN ANGULAR -->
+					<input type="text" class="form-control input-lg text-center" 
+						placeholder="Add todo's text" ng-model="todo.formData.title">
+				</div>
+				<div class="form-group">
+					<!-- BIND THIS VALUE TO formData.dueDate IN ANGULAR -->
+<!-- 					<input type="text" class="form-control input-lg text-center" 
+						placeholder="Add todo's due date" ng-model="todo.formData.dueDate"> -->
+		            <p class="input-group">
+		              <input readonly="readonly" type="text" class="form-control" uib-datepicker-popup="{{todo.cal.format}}" 
+		              	ng-model="todo.formData.dueDate" is-open="todo.cal.opened" datepicker-options="todo.cal.options" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" />
+		              <span class="input-group-btn">
+		                <button type="button" class="btn btn-default" ng-click="todo.openCal()"><i class="glyphicon glyphicon-calendar"></i></button>
+		              </span>
+		            </p>
+				</div>
+				<div class="form-group">
+					<!-- BIND THIS VALUE TO formData.priority IN ANGULAR -->
+					
+					<label> Priority</label> 
+					<label class="radio-inline"><input type="radio" value='0' name="optradio" ng-model="todo.formData.priority">Low</label>
+					<label class="radio-inline"><input type="radio" value='1' name="optradio" ng-model="todo.formData.priority">Medium</label>
+					<label class="radio-inline"><input type="radio" value='2' name="optradio" ng-model="todo.formData.priority">High</label>
+				</div>
+				<div class="form-group">
+					 <label>Completed? <input type="checkbox" ng-model="todo.formData.completed"></label>
+				</div>
+
+				<!-- create() WILL CREATE NEW TODOS -->
+				<button type="submit" class="btn btn-primary btn-lg" 
+					ng-disabled='!todo.isFormDataValid()'
+					ng-click="todo.create()">Add</button>
+			</form>
+		</div>
+	</div>
+</div>

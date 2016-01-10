@@ -106,3 +106,4 @@ globals:
   COUNTER_NET_SERVER_CONNECTION        : false
   escape                               : false
   unescape                             : false
+  angular							   : true

@@ -1,0 +1,37 @@
+html 					{ overflow-y:scroll; }
+body 					{ padding-top:50px; }
+#todo-list 				{ margin-bottom:30px; }
+
+#todo-list td span.glyphicon-trash{
+    cursor: pointer;
+    color: red;
+}
+#todo-list td span.glyphicon-check{
+    cursor: pointer;
+    color: green;
+    font-size: 140%;
+}
+
+
+#todo-form { 
+	margin-bottom:50px; 
+}
+/*#todo-form .priority	{ top: 10px; }*/
+
+#todo-list table {
+    border-collapse: collapse;
+}
+
+#todo-list td {
+    position: relative;
+    padding: 5px 10px;
+}
+
+#todo-list tr.strikeout td:before {
+    content: " ";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    border-bottom: 2px solid #111;
+    width: 100%;
+}
