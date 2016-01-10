@@ -2,24 +2,25 @@
 	'use strict';
 
 	var todoService = require('../services/todoService');
+	var helperService = require('../services/helperService');
 
 	todoController.init = function (app) {
 
 	    app.get('/api/todos', function(req, res) {
-			
+
 			function onSuccess (todos) {
 				res.status(200).json(todos);
 			}
 
-			function onError (todos) {
+			function onError (err) {
 				res.status(500).json(err);
 			}
-	    	
+
 	    	todoService.getTodos().then(onSuccess).catch(onError);
 	    });
 
 	    app.get('/api/todos/:todoId', function(req, res) {
-			
+
 			function onSuccess (todo) {
 				res.status(200).json(todo);
 			}
@@ -34,12 +35,12 @@
 
 	    app.post('/api/todos', function(req, res) {
 
-			var body = "";
-			
+			var body = '';
+
 			req.on('data', function (chunk) {
 				body += chunk;
 			});
-			
+
 			req.on('end', function () {
 
 				if (body.length === 0) {
@@ -47,7 +48,7 @@
 					return;
 				}
 		    	var todo = JSON.parse(body);
-		    	var todos = todoService.addTodo(todo).then(onSuccess).catch(onError);
+		    	todoService.addTodo(todo).then(onSuccess).catch(onError);
 			});
 
 			req.on('error', function(e) {
@@ -69,7 +70,7 @@
 			function onSuccess (todo) {
 				if (todo) {
 					res.sendStatus(200);
-				}else{
+				}else {
 					res.sendStatus(404);
 				}
 			}
@@ -81,6 +82,32 @@
 	    	var todoId = req.params.todoId;
 
 	    	todoService.deleteTodo(todoId).then(onSuccess).catch(onError);
+	    });
+
+	    app.put('/api/todos', function(req, res) {
+
+			function onUpdateSuccess (todo) {
+				if (todo) {
+					res.sendStatus(200);
+				}else {
+					res.sendStatus(404);
+				}
+			}
+
+  			function onUpdateError (err) {
+    			res.status(500).json(err);
+  			}
+
+			helperService.parseRequestBody(req).then( (todo) => {
+				todoService.updateTodo(todo).then(onUpdateSuccess).catch(onUpdateError);
+			}).catch((err) => {
+				if (err.emptyBody) {
+					res.status(400).json('Bad request');
+					return;
+				}else {
+					res.status(500).json(err.message);
+				}
+			});
 	    });
 	};
 }

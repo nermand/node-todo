@@ -26,7 +26,7 @@
 	};
 
 	todoService.getTodo = function (todoId) {
-// return Todo.findOne({id : todoId});
+		// return Todo.findOne({id : todoId});
 		return new Promise(function(resolve, reject){
 			Todo.findOne({id : todoId}, function (err, todo) {
 				if (err) {
@@ -50,7 +50,10 @@
 		
 		return Todo.create({
 			id: uuid.v1(),
-			title : todo.title
+			title : todo.title,
+			dueDate : todo.dueDate,
+			priority : todo.priority,
+			completed : todo.completed
 		});
 	};
 
@@ -61,6 +64,15 @@
 		}
 
 		return Todo.findOneAndRemove({id : todoId});
+	};
+
+	todoService.updateTodo = function (todo) {
+
+		if (!todo || !todo.id) {
+			return Promise.reject('Cannot update todo without an ID');
+		}
+
+		return Todo.findOneAndUpdate({id : todo.id}, todo);
 	};
 }
 
